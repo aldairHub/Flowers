@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌻</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #E9D7A8;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Botón bonito */
+  #startButton {
+  padding: 15px 35px;
+  font-size: 1.5em;
+  font-family: 'Georgia', serif;
+  color: #5A3E2B; /* Marrón cálido para mejor contraste */
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(255,255,255,0.6); /* Le da un brillo sutil */
+  background: linear-gradient(135deg, #FADADD, #FFE5B4, #D8BFD8);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.5s ease;
+  z-index: 20;
+}
+
+  #startButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(250, 218, 221, 0.8), 
+                0 0 15px rgba(255, 229, 180, 0.6), 
+                0 0 25px rgba(216, 191, 216, 0.6);
+  }
+
+  #startButton.fade-out {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.9);
+  }
+
+  .flower {
+    position: absolute;
+    top: -50px;
+    opacity: 0.9;
+    user-select: none;
+    pointer-events: none;
+    animation: fall linear forwards;
+  }
+
+  .flower img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  @keyframes fall {
+    0% {
+      transform: translateY(0px) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(110vh) rotate(360deg);
+      opacity: 0.8;
+    }
+  }
+
+  .final-image {
+    position: absolute;
+    max-width: 90%;
+    max-height: 90%;
+    opacity: 0;
+    transition: opacity 2s ease;
+    z-index: 10;
+  }
+
+  .message {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.5em;
+    font-family: 'Georgia', serif;
+    color: #8B4513;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    opacity: 0;
+    transition: opacity 2s ease;
+    z-index: 15;
+    max-width: 80%;
+  }
+</style>
+</head>
+<body>
+  <!-- Botón de inicio -->
+  <button id="startButton">🌻 Start 🌻</button>
+
+  <!-- Audio -->
+  <audio id="backgroundMusic" loop>
+    <source src="fondo.mp3" type="audio/mpeg">
+    Tu navegador no soporta audio.
+  </audio>
+
+  <!-- Mensaje -->
+  <div class="message" id="finalMessage">
+    You are a sweet mystery
+  </div>
+
+  <!-- Imagen final -->
+  <img src="Ramo_de_flores.png" alt="Flores" class="final-image" id="finalImage">
+
+  <script>
+    const imageUrls = ["flor1.png", "flor2.png"];
+    const body = document.body;
+    const music = document.getElementById("backgroundMusic");
+    const startButton = document.getElementById("startButton");
+
+    let flowerCount = 0;
+    const maxFlowers = 300;
+    let interval;
+
+    function startAnimation() {
+      // Animación de desvanecimiento
+      startButton.classList.add("fade-out");
+
+      // Reproducir música
+      music.play().catch(e => console.log("Esperando interacción del usuario"));
+
+      // Iniciar lluvia de flores
+      interval = setInterval(() => {
+        const flower = document.createElement("div");
+        flower.classList.add("flower");
+
+        const img = document.createElement("img");
+        img.src = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+        img.alt = "Flor";
+        flower.appendChild(img);
+
+        const size = Math.random() * 60 + 40;
+        flower.style.width = size + "px";
+        flower.style.height = size + "px";
+
+        const x = Math.random() * window.innerWidth;
+        flower.style.left = x + "px";
+
+        const duration = Math.random() * 3 + 3;
+        flower.style.animationDuration = duration + "s";
+
+        body.appendChild(flower);
+
+        setTimeout(() => {
+          flower.remove();
+        }, duration * 1000);
+
+        flowerCount++;
+        if (flowerCount >= maxFlowers) {
+          clearInterval(interval);
+
+          setTimeout(() => {
+            document.querySelectorAll(".flower").forEach(f => {
+              f.style.transition = "opacity 1.5s ease";
+              f.style.opacity = "0";
+            });
+
+            setTimeout(() => {
+              document.getElementById("finalImage").style.opacity = "1";
+              document.getElementById("finalMessage").style.opacity = "1";
+            }, 2000);
+          }, 2000);
+        }
+      }, 50);
+    }
+
+    // Evento del botón
+    startButton.addEventListener("click", startAnimation);
+  </script>
+</body>
+</html>
